@@ -6,6 +6,13 @@ gem 'devise'
 gem 'sidekiq'
 gem 'paperclip'
 
+gem 'omniauth'
+gem 'omniauth-oauth2'
+gem 'omniauth-facebook'
+gem 'omniauth-gplus'
+gem 'omniauth-vkontakte'
+gem 'omniauth-twitter'
+
 gem 'haml-rails'
 
 gem 'therubyracer' #, platforms: :ruby
