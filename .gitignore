@@ -14,6 +14,10 @@
 # Ignore all logfiles and tempfiles.
 /log/*
 !/log/.keep
+
+/public/uploads/audio/*
+!/public/uploads/audio/.keep
+
 /tmp
 
 #IDE files
