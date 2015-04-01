@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   devise_for :users
 
   root 'application#index'
+  resources :audios,  path_names: { create: "audios_create" }, :only => [:index, :new, :create]
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
