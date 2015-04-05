@@ -13,6 +13,9 @@ gem 'omniauth-gplus'
 gem 'omniauth-vkontakte'
 gem 'omniauth-twitter'
 
+gem 'babosa'
+gem 'friendly_id', '~> 5.1.0'
+
 gem 'haml-rails'
 
 gem 'therubyracer' #, platforms: :ruby
