@@ -22,3 +22,8 @@
 
 #IDE files
 .idea
+Gemfile.lock
+config/initializers/devise.rb
+config/secrets.yml
+config/database.yml
+db/schema.rb
