@@ -3,6 +3,8 @@ Rails.application.routes.draw do
 
   root 'application#index'
   resources :audios,  path_names: { create: "audios_create" }, :only => [:index, :new, :create]
+  resources :playlists, :only => [:index]
+  # get '/*path' => 'playlists#index'
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

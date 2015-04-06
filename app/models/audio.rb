@@ -4,31 +4,31 @@ class Audio < ActiveRecord::Base
   STATUS_NEW = 'uploaded'
   STATUS_PROCESS = 'processing'
   STATUS_CONVERTED = 'converted'
+  AUDIO_PATH = '/public/uploads/audio/'
 
   belongs_to :user
 
   has_attached_file :file,
-                    :path => Rails.root.to_s + "/public/uploads/audio/:filename",
+                    :path => Rails.root.to_s + self::AUDIO_PATH + ":filename",
                     :url => "/uploads/audio/:filename"
   validates_attachment_presence :file
   validates_attachment_content_type :file, :content_type => /\Aaudio\/.*\Z/
 
   after_initialize :init
 
-  public
-
   def self.convert(id)
-    audioFilename = Audio.find(id)
-    audioFilename.status = Audio::STATUS_PROCESS
-    audioFilename.save
+    audioFile = Audio.find(id)
+    audioFile.status = Audio::STATUS_PROCESS
+    audioFile.save
 
-    file_path = Rails.root.to_s + "/public/uploads/audio/" + audioFilename.file.original_filename
-    cmd = "avconv -i #{file_path} -ac 2 -ab 64k #{Rails.root.to_s + "/public/uploads/audio/" + 'pirates_of_the_caribbean.ogg'}"
+    filename = audioFile.file.original_filename.split('.')[0]
+    file_path = Rails.root.to_s + self::AUDIO_PATH + audioFile.file.original_filename
+    cmd = "avconv -i #{file_path} -ac 2 -ab 64k #{filename + '.ogg'}"
 
     if system cmd
-      audioFilename.file.instance_write(:filename, audioFilename.file.original_filename + '.ogg' )
-      audioFilename.status = Audio::STATUS_CONVERTED
-      audioFilename.save
+      audioFile.file.instance_write(:filename, filename + '.ogg' )
+      audioFile.status = Audio::STATUS_CONVERTED
+      audioFile.save
       FileUtils.rm file_path
     end
   end
