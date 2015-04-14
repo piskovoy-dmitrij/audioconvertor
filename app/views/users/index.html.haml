@@ -14,14 +14,20 @@
         %th.text-right
           Action
     %tbody
-      - @users.__send__ :each_with_hit do |user, hit|
+      - @users.each_with_hit do |user, hit|
         %tr
           %td
             = link_to user_path(user) do
               = hit.try(:highlight).try(:name) ? hit.highlight.name.join.html_safe : user.name
           %td.text-right
             - unless current_user.me?(user)
-              = link_to 'Add to friends', invite_friend_path(user), class: 'btn btn-success'
+              - friend = hit.try(:friendships).find { |f| f.friend_id == current_user.id }.try(:is_confirmed)
+              - if friend.nil?
+                = link_to 'Add to friends', invite_friend_path(user), class: 'btn btn-success'
+              - elsif friend
+                = link_to 'Remove from friends', remove_friend_path(user), method: :delete, data: {confirm: 'You sure?'}, class: 'btn btn-danger'
+              - else
+                = link_to 'Remove request', remove_friend_path(user), method: :delete, data: {confirm: 'You sure?'}, class: 'btn btn-danger'
     %tfoot
       %tr
         %th

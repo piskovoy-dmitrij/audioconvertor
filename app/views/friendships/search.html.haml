@@ -17,7 +17,7 @@
           %th.text-right
             Action
       %tbody
-        - @friends.__send__ :each_with_hit do |user, hit|
+        - @friends.each_with_hit do |user, hit|
           %tr
             %td
               = link_to user_path(user) do

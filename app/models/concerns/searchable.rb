@@ -9,31 +9,16 @@ module Searchable
 
     # Customize the index name
     #
-    index_name [Rails.application.engine_name, Rails.env].join('_')
+    index_name [Rails.application.engine_name, self.to_s.downcase, Rails.env].join('_')
 
-    # Set up index configuration and mapping
-    #
-    settings index: {number_of_shards: 1, number_of_replicas: 0} do
-      mapping do
-        indexes :name, type: 'multi_field' do
-          indexes :name, analyzer: 'snowball'
-          indexes :tokenized, analyzer: 'simple'
-        end
-
-        indexes :birth_date, type: 'date'
-
-        indexes :audios do
-          indexes :title, type: 'multi_field' do
-            indexes :title, analyzer: 'snowball'
-            indexes :tokenized, analyzer: 'simple'
-          end
-        end
-
-        indexes :friendships do
-          indexes :user_id, type: 'integer'
-        end
-      end
-    end
+    # settings index: {number_of_shards: 1, number_of_replicas: 0} do
+    #   mapping do
+    #     indexes :name, type: 'multi_field' do
+    #       indexes :name, analyzer: 'snowball'
+    #       indexes :tokenized, analyzer: 'simple'
+    #     end
+    #   end
+    # end
 
     # Set up callbacks for updating the index on model changes
     #
@@ -45,8 +30,20 @@ module Searchable
     #
     def as_indexed_json(options={})
       self.as_json(
-          include: {audios: {methods: [:title], only: [:title]}}
+          include: {
+              audios: {only: [:title]},
+              friendships: {only: [:friend_id, :is_confirmed]},
+          }
       )
+    end
+
+    __set_filters = lambda do |key, f|
+
+      @search_definition[:filter][:and] ||= []
+      @search_definition[:filter][:and] |= [f]
+
+      @search_definition[:facets][key.to_sym][:facet_filter][:and] ||= []
+      @search_definition[:facets][key.to_sym][:facet_filter][:and] |= [f]
     end
 
     # Search in title and content fields for `query`, include highlights in response
@@ -55,17 +52,6 @@ module Searchable
     # @return [Elasticsearch::Model::Response::Response]
     #
     def self.search(query, options={})
-
-      # Prefill and set the filters (top-level `filter` and `facet_filter` elements)
-      #
-      __set_filters = lambda do |key, f|
-
-        @search_definition[:filter][:and] ||= []
-        @search_definition[:filter][:and] |= [f]
-
-        @search_definition[:facets][key.to_sym][:facet_filter][:and] ||= []
-        @search_definition[:facets][key.to_sym][:facet_filter][:and] |= [f]
-      end
 
       @search_definition = {
           query: {},
@@ -78,31 +64,39 @@ module Searchable
               }
           },
 
-          filter: {},
-
-          facets: {
-              audios: {
-                  terms: {
-                      field: 'audios.title'
-                  },
-                  facet_filter: {}
-              },
-              friendships: {
-                  terms: {
-                      field: 'friendships.friend_id'
-                  },
-                  facet_filter: {}
-              },
-              birthdate: {
-                  date_histogram: {
-                      field: 'birth_date',
-                      interval: 'year'
-                  },
-                  facet_filter: {}
-              }
-          }
+          filter: {}
       }
 
+
+      if options[:sortby]
+        sort = 'desc'
+        if options[:sort]
+          sort = options[:sort]
+          options.delete(:sort)
+        end
+
+        @search_definition[:sort] = {options[:sortby] => sort}
+        @search_definition[:track_scores] = true
+
+        options.delete(:sortby)
+      end
+
+      options = self.set_needed_filters(query, options)
+
+      options.delete(:name)
+
+      options.each do |key, value|
+        next unless @search_definition.include?(key)
+
+        f = {term: {key.to_sym => value}}
+
+        __set_filters.(key, f)
+      end
+
+      __elasticsearch__.search(@search_definition)
+    end
+
+    def self.set_needed_filters(query, options)
       unless query.blank?
         @search_definition[:query] = {
             bool: {
@@ -123,49 +117,18 @@ module Searchable
       if options[:audio]
         f = {term: {'audios.title' => options[:audio]}}
 
-        __set_filters.(:birthdate, f)
-        __set_filters.(:friendships, f)
-      end
-
-      if options[:birthdate_year]
-        f = {
-            range: {
-                published_on: {
-                    gte: options[:birthdate_year],
-                    lte: "#{options[:birthdate_year]}||+1y"
-                }
-            }
-        }
-
         __set_filters.(:audios, f)
-        __set_filters.(:friendships, f)
+        options.delete(:audio)
       end
 
       if options[:friendship]
         f = {term: {'friendships.friend_id' => options[:friendship]}}
 
-        __set_filters.(:birthdate, f)
-        __set_filters.(:audios, f)
+        __set_filters.(:friendships, f)
+        options.delete(:friendship)
       end
 
-      if options[:sort]
-        @search_definition[:sort] = {options[:sort] => 'asc'}
-        @search_definition[:track_scores] = true
-      end
-
-      unless query.blank?
-        @search_definition[:suggest] = {
-            text: query,
-            suggest_name: {
-                term: {
-                    field: 'name.tokenized',
-                    suggest_mode: 'always'
-                }
-            }
-        }
-      end
-
-      __elasticsearch__.search(@search_definition)
+      options
     end
   end
 end

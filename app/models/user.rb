@@ -135,8 +135,6 @@ class User < ActiveRecord::Base
       false
     else
       friendship.destroy
-      reload && user.reload if friendship.destroyed?
-      true
     end
   end
 
