@@ -13,3 +13,7 @@
  *= require_tree .
  *= require_self
  */
+
+.list-table.table tbody > tr > td {
+    vertical-align: middle;
+}

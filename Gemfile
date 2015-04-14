@@ -19,12 +19,19 @@ gem 'friendly_id', '~> 5.1.0'
 gem 'haml-rails'
 
 gem 'therubyracer' #, platforms: :ruby
-gem 'sass-rails', '~> 5.0'
+# gem 'sass-rails', '~> 5.0'
 gem 'twitter-bootstrap-rails'
-gem 'coffee-rails', '~> 4.1.0'
-gem 'uglifier', '>= 1.3.0'
+# gem 'coffee-rails', '~> 4.1.0'
+# gem 'uglifier', '>= 1.3.0'
 gem 'bootstrap-sass'
 gem 'jquery-rails'
+
+gem 'kaminari'
+
+gem 'elasticsearch',       git: 'git://github.com/elasticsearch/elasticsearch-ruby.git'
+gem 'elasticsearch-model', git: 'git://github.com/elasticsearch/elasticsearch-rails.git'
+gem 'elasticsearch-rails', git: 'git://github.com/elasticsearch/elasticsearch-rails.git'
+
 
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
 gem 'turbolinks'
@@ -52,5 +59,9 @@ group :development, :test do
   gem 'spring'
 
   gem 'rspec-rails', '~> 3.0'
+
+  gem 'lograge'
+
+  gem 'quiet_assets'
 end
 

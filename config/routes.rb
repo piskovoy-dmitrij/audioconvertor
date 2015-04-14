@@ -1,7 +1,27 @@
 Rails.application.routes.draw do
-  devise_for :users, controllers: { omniauth_callbacks: "user/omniauth_callbacks", registrations: "user/registrations" }
+  devise_for :users, controllers: {omniauth_callbacks: 'user/omniauth_callbacks', registrations: 'user/registrations'}
 
   root 'application#index'
+
+  resources :friends, :controller => 'friendships', :only => [:show, :index], param: :username, :constraints => { :username => /[^\/]+/ } do
+    member do
+      get :confirm
+      delete :remove
+      get :invite
+    end
+
+    collection do
+      get :requests
+      get :invites
+      get :search
+    end
+  end
+
+  resources :users, :only => [:show, :index], param: :username, :constraints => { :username => /[^\/]+/ } do
+    collection do
+      get :search
+    end
+  end
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

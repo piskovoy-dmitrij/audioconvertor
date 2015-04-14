@@ -1,0 +1,29 @@
+= render 'friends_navigation'
+
+%div.container-fluid
+  %div.row
+    - if current_user.invites.blank?
+      %p
+        You have no invites yet
+    - else
+      %table.table.table-striped.list-table
+        %thead
+          %tr
+            %th
+              User
+            %th.text-right
+              Action
+        %tbody
+          - current_user.invites.each do |friend|
+            %tr
+              %td
+                = link_to user_path(friend) do
+                  = friend.name
+              %td.text-right
+                = link_to 'Add to friends', confirm_friend_path(friend), class: 'btn btn-success'
+        %tfoot
+          %tr
+            %th
+              User
+            %th.text-right
+              Action

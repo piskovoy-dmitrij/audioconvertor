@@ -1,0 +1,36 @@
+= render 'friends_navigation'
+
+%div.container-fluid
+  %div.row
+    - if current_user.friends_list.blank?
+      %p
+        You have no friends yet
+    - else
+      = form_tag search_friends_path, method: 'get' do
+        %div.input-group
+          = text_field_tag :q, params[:q], class: 'form-control', placeholder: 'Search...'
+
+          %span.input-group-btn
+            = submit_tag :search, class:"btn btn-default"
+
+      %table.table.table-striped.list-table
+        %thead
+          %tr
+            %th
+              User
+            %th.text-right
+              Action
+        %tbody
+          - current_user.friends_list.each do |friend|
+            %tr
+              %td
+                = link_to user_path(username: friend) do
+                  = friend.name
+              %td.text-right
+                = link_to 'Remove from friends', remove_friend_path(friend), method: :delete, data: {confirm: 'You sure?'}, class: 'btn btn-danger'
+        %tfoot
+          %tr
+            %th
+              User
+            %th.text-right
+              Action

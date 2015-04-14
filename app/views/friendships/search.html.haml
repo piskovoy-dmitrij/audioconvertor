@@ -1,0 +1,33 @@
+= render 'friends_navigation'
+
+%div.container-fluid
+  %div.row
+    = form_tag search_friends_path, method: 'get' do
+      %div.input-group
+        = text_field_tag :q, params[:q], class: 'form-control', placeholder: 'Search...'
+
+        %span.input-group-btn
+          = submit_tag :search, class:"btn btn-default"
+
+    %table.table.table-striped.list-table
+      %thead
+        %tr
+          %th
+            User
+          %th.text-right
+            Action
+      %tbody
+        - @friends.__send__ controller.action_name == 'search' ? :each_with_hit : :each do |user, hit|
+          %tr
+            %td
+              = link_to user_path(user) do
+                = hit.try(:highlight).try(:name) ? hit.highlight.name.join.html_safe : user.name
+            %td.text-right
+              - unless current_user.id == user.id
+                = link_to 'Add to friends', invite_friend_path(user), class: 'btn btn-success'
+      %tfoot
+        %tr
+          %th
+            User
+          %th.text-right
+            Action

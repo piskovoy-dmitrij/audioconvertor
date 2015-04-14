@@ -41,7 +41,6 @@ class User::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   end
 
   alias_method :facebook, :all
-  alias_method :vkontakte, :all
   alias_method :twitter, :all
   alias_method :gplus, :all
 end

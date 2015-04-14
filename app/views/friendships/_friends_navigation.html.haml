@@ -1,0 +1,15 @@
+%div.container-fluid
+  %div.row
+    %ul.nav.nav-pills
+      %li{class: active_nav_item('friendships', 'index')}
+        = link_to friends_path do
+          All
+          %span.badge= current_user.total_friends
+      %li{class: active_nav_item('friendships', 'invites')}
+        = link_to invites_friends_path do
+          Invites
+          %span.badge= current_user.total_invites
+      %li{class: active_nav_item('friendships', 'requests')}
+        = link_to requests_friends_path do
+          Requests
+          %span.badge= current_user.total_requests
