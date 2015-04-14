@@ -2,6 +2,9 @@ Rails.application.routes.draw do
   devise_for :users, controllers: {omniauth_callbacks: 'user/omniauth_callbacks', registrations: 'user/registrations'}
 
   root 'application#index'
+  resources :audios,  path_names: { create: "audios_create" }, :only => [:index, :new, :create]
+  resources :playlists, :only => [:index]
+  # get '/*path' => 'playlists#index'
 
   resources :friends, :controller => 'friendships', :only => [:show, :index], param: :username, :constraints => { :username => /[^\/]+/ } do
     member do

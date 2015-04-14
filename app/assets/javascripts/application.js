@@ -13,5 +13,10 @@
 //= require jquery
 //= require jquery_ujs
 //= require twitter/bootstrap
-//= require turbolinks
+// require ember
+// require ember-data
+// require_self
+// require ./a_converter
 //= require_tree .
+
+//window.AConverter = Ember.Application.create();

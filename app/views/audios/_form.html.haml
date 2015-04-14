@@ -1,0 +1,15 @@
+= form_for @audio, :url => audios_path, :html => {:role => "form", :multipart => true} do |f|
+  - if @audio.errors.any?
+    .error-block
+      %h2= "#{pluralize(@audio.errors.count, "error")} occured while saving audio file:"
+      %ul
+        - @audio.errors.full_messages.each do |msg|
+          %li= msg
+  .form-group
+    = f.file_field :file
+    %p.help-block Please choose audio file for upload
+  .form-group
+    = f.text_field :title, {:class => 'form-control', :placeholder => "Title"}
+    %p.help-block You can set-up new title to your file
+
+  = f.submit 'Save', class:'btn btn-default'
