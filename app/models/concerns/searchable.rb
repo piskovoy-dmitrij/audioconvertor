@@ -1,3 +1,4 @@
+# bundle exec sidekiq --queue elasticsearch --verbose
 # rake environment elasticsearch:import:model CLASS='User' BATCH=100 FORCE=y
 #
 module Searchable
