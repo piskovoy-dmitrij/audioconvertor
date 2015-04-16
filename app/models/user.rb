@@ -112,7 +112,7 @@ class User < ActiveRecord::Base
 
   def slug_candidates
     self.username
-    self.name.to_slug.normalize!({:transliterations => [:russian, :latin]}) if self.username.blank?
+    self.name.to_slug.normalize!({:transliterations => [:russian, :latin]}) if self.username.blank? && !self.name.nil?
   end
 
   def should_generate_new_friendly_id?
