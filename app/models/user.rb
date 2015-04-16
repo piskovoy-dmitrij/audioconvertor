@@ -8,6 +8,7 @@ class User < ActiveRecord::Base
   validates_uniqueness_of :username
 
   has_many :audios, dependent: :destroy
+  has_many :playlists, dependent: :destroy
 
   has_many :friendships
   has_many :all_friends, :through => :friendships, :source => :friend

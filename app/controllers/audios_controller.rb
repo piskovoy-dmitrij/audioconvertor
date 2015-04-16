@@ -1,8 +1,12 @@
 class AudiosController < ApplicationController
-  protect_from_forgery with: :exception
 
   def index
+    files = []
+    Audio.all().each do |audio|
+      files.push(Audio::id3_data(audio, 0))
+    end
 
+    render json: files
   end
 
   def new
@@ -16,7 +20,7 @@ class AudiosController < ApplicationController
 
     if @audio.save
       AudioConvert.perform_async(@audio.id)
-      redirect_to audios_path, notice: 'Audio was successfully created.'
+      redirect_to root_path, notice: 'Audio was successfully created.'
     else
       render new_audio_path
     end

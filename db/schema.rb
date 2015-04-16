@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150404155038) do
+ActiveRecord::Schema.define(version: 20150411161549) do
 
   create_table "audios", force: :cascade do |t|
     t.string   "title",             limit: 255
@@ -27,6 +27,38 @@ ActiveRecord::Schema.define(version: 20150404155038) do
   end
 
   add_index "audios", ["user_id"], name: "index_audios_on_user_id", using: :btree
+
+  create_table "audios_playlists", id: false, force: :cascade do |t|
+    t.integer "playlist_id", limit: 4
+    t.integer "audio_id",    limit: 4
+  end
+
+  add_index "audios_playlists", ["audio_id"], name: "index_audios_playlists_on_audio_id", using: :btree
+  add_index "audios_playlists", ["playlist_id"], name: "index_audios_playlists_on_playlist_id", using: :btree
+
+  create_table "authorizations", id: false, force: :cascade do |t|
+    t.integer  "user_id",    limit: 4
+    t.string   "provider",   limit: 255
+    t.string   "uid",        limit: 255
+    t.string   "token",      limit: 255
+    t.string   "secret",     limit: 255
+    t.datetime "created_at"
+  end
+
+  add_index "authorizations", ["provider", "uid", "token", "secret"], name: "index_authorizations_on_provider_and_uid_and_token_and_secret", using: :btree
+
+  create_table "friendly_id_slugs", force: :cascade do |t|
+    t.string   "slug",           limit: 255, null: false
+    t.integer  "sluggable_id",   limit: 4,   null: false
+    t.string   "sluggable_type", limit: 50
+    t.string   "scope",          limit: 255
+    t.datetime "created_at"
+  end
+
+  add_index "friendly_id_slugs", ["slug", "sluggable_type", "scope"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type_and_scope", unique: true, using: :btree
+  add_index "friendly_id_slugs", ["slug", "sluggable_type"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type", using: :btree
+  add_index "friendly_id_slugs", ["sluggable_id"], name: "index_friendly_id_slugs_on_sluggable_id", using: :btree
+  add_index "friendly_id_slugs", ["sluggable_type"], name: "index_friendly_id_slugs_on_sluggable_type", using: :btree
 
   create_table "friendships", force: :cascade do |t|
     t.integer  "user_id",      limit: 4
@@ -56,10 +88,20 @@ ActiveRecord::Schema.define(version: 20150404155038) do
     t.string   "last_sign_in_ip",        limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "facebook_uid",           limit: 255
+    t.string   "twitter_uid",            limit: 255
+    t.string   "gplus_uid",              limit: 255
+    t.string   "vkontakte_uid",          limit: 255
+    t.string   "name",                   limit: 255
+    t.date     "birth_date"
   end
 
-  add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
+  add_index "users", ["email"], name: "index_users_on_email", using: :btree
+  add_index "users", ["facebook_uid"], name: "index_users_on_facebook_uid", using: :btree
+  add_index "users", ["gplus_uid"], name: "index_users_on_gplus_uid", using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
+  add_index "users", ["twitter_uid"], name: "index_users_on_twitter_uid", using: :btree
   add_index "users", ["username"], name: "index_users_on_username", unique: true, using: :btree
+  add_index "users", ["vkontakte_uid"], name: "index_users_on_vkontakte_uid", using: :btree
 
 end
