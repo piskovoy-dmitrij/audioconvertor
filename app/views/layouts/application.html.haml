@@ -28,20 +28,12 @@
         %a.navbar-brand(href="/") Audio Converter
 
         .navbar-collapse.collapse.navbar-responsive-collapse
-<<<<<<< HEAD
           - if user_signed_in?
             %ul.nav.navbar-nav
               %li= link_to 'Friends', friends_path
               %li= link_to 'Users', users_path
               %li= link_to "Upload audio", new_audio_path
-              %li= link_to "Link 2", "/path2"
-=======
-          %ul.nav.navbar-nav
-            %li= link_to "Upload audio", new_audio_path
-            %li= link_to "Audio player", player_path
-            %li= link_to "Link 3", "/path3"
-            %li= link_to "Link 3", "/path3"
->>>>>>> 000_audio_player
+              %li= link_to "Audio player", player_path
           %ul.nav.navbar-nav.navbar-right
             - if user_signed_in?
               %li= link_to "#{current_user.email}", edit_user_registration_path
