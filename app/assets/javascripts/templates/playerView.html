@@ -1,0 +1,24 @@
+<div class="row audio-progress" ng-model="player">
+
+    <div class="title">
+        <p>Now playing: {{ title }}</p>
+    </div>
+    <div class="time-played">{{ minutesCurrent }}:{{ secondsCurrent }} / {{ minutesDuration }}:{{ secondsDuration }}</div><!--<div class="time-left">{{ secondsDuration }}</div>-->
+
+    <div class="form-group audio-progress">
+        <input type="range" id="seek" value="{{ secondsProgress }}" max="{{ duration }}" ng-model="audio.currentTime" ng-init="secondsProgress=0" />
+    </div>
+
+    <!--<div>Current track: {{ current_track }}</div>-->
+    <div>Playlist count: {{ playlist_count }}</div>
+
+    <div class="form-group">
+        <button ng-disabled="current_track <= 1" class="btn btn-default prev" ng-click="prev()"><i class="glyphicon glyphicon-step-backward"></i> prev</button>
+        <button ng-disabled="0" class="btn next" ng-class="{true: 'btn-primary', false: 'btn-default'}[playing]" ng-click="play()">play <span class="glyphicon glyphicon-play"></span></button>
+        <button ng-disabled="0" class="btn btn-default next" ng-class="{true: 'btn-default', false: 'btn-primary'}[playing]" ng-click="pause()">pause <i class="glyphicon glyphicon-pause"></i></button>
+        <button ng-disabled="0" class="btn btn-default next" ng-click="stop()">stop <i class="glyphicon glyphicon-stop"></i></button>
+        <button ng-disabled="playlist_count == current_track" class="btn btn-default next" ng-click="next()">next <i class="glyphicon glyphicon-step-forward"></i></button>
+
+        <label>volume: <input min="0" max="1" step="0.01" type="range" ng-model="audio.volume" /></label>
+    </div>
+</div>

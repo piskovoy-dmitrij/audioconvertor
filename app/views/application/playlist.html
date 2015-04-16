@@ -1,0 +1,44 @@
+<div class="container" ng-app="myApp">
+    <div class="row" ng-controller="PlaylistController">
+        <div class="col-md-8">
+            <h3><strong>List of audio files:</strong></h3>
+            <ul>
+              <li ng-repeat="file in audio_files" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" ng-model="audio_files" jqyoui-draggable="{index: {{$index}}, animate: true, placeholder: 'keep'}">
+                  {{ file.title }}
+              </li>
+            </ul>
+        </div>
+
+        <div class="col-md-4">
+            <accordion close-others="true">
+                <accordion-group heading="Create new Playlist" is-open="true">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Playlist name" ng-model="name" required/>
+                    </div>
+
+                    <ol data-drop="true" ng-model='new_list' jqyoui-droppable="{multiple:true}">
+                        <li ng-repeat="item in new_list track by $index" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" ng-model="new_list" jqyoui-draggable="{index: {{$index}}, animate:true}">
+                            {{ item.title }}
+                        </li>
+                        <li ng-hide="new_list.length">Add your tracks to playlist</li>
+                    </ol>
+
+                    <input class="btn btn-primary" type="button" value="Submit" ng-click="submit(name)" ng-disabled="!name">
+                </accordion-group>
+                <accordion-group ng-repeat="playlist in playlists" ng-model="playlists" ng-show="playlist.name">
+                    <accordion-heading>
+                        {{ playlist.name}} <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
+                    </accordion-heading>
+
+                    <ol>
+                        <li ng-repeat="file in playlist.files track by $index">
+                            {{ file.title }}
+                        </li>
+                    </ol>
+
+                    <input class="btn btn-primary" type="button" value="Delete" ng-click="delete(playlist)">
+                </accordion-group>
+            </accordion>
+        </div>
+    </div>
+</div>
