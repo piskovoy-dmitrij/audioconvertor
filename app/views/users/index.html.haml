@@ -25,7 +25,7 @@
               - inverse = hit.try(:inverse_friendships).find { |f| f.user_id == current_user.id }.try(:is_confirmed)
               - if friend.nil? && inverse.nil?
                 = link_to 'Add to friends', invite_friend_path(user), class: 'btn btn-success'
-              - elsif inverse == false
+              - elsif inverse === false
                 = link_to 'Remove request', cancel_friend_path(user), method: :delete, data: {confirm: 'You sure?'}, class: 'btn btn-danger'
               - else
                 - friend = friend.try(:is_confirmed)
