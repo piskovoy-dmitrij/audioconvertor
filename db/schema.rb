@@ -28,6 +28,14 @@ ActiveRecord::Schema.define(version: 20150413164044) do
 
   add_index "audios", ["user_id"], name: "index_audios_on_user_id", using: :btree
 
+  create_table "audios_playlists", id: false, force: :cascade do |t|
+    t.integer "playlist_id", limit: 4
+    t.integer "audio_id",    limit: 4
+  end
+
+  add_index "audios_playlists", ["audio_id"], name: "index_audios_playlists_on_audio_id", using: :btree
+  add_index "audios_playlists", ["playlist_id"], name: "index_audios_playlists_on_playlist_id", using: :btree
+
   create_table "authorizations", id: false, force: :cascade do |t|
     t.integer  "user_id",    limit: 4
     t.string   "provider",   limit: 255

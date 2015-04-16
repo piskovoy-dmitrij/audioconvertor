@@ -6,4 +6,12 @@ class ApplicationController < ActionController::Base
   def index
 
   end
+
+  def playlist
+
+  end
+
+  def player
+
+  end
 end

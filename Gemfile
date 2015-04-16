@@ -28,12 +28,14 @@ gem 'elasticsearch',       git: 'git://github.com/elasticsearch/elasticsearch-ru
 gem 'elasticsearch-model', git: 'git://github.com/elasticsearch/elasticsearch-rails.git'
 gem 'elasticsearch-rails', git: 'git://github.com/elasticsearch/elasticsearch-rails.git'
 
+gem 'taglib-ruby'
 
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
-gem 'turbolinks'
+#gem 'turbolinks'
 
-gem 'ember-rails'
-gem 'ember-source'
+gem 'angularjs-rails'
+gem 'angular-rails-templates'
+gem 'bower-rails'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

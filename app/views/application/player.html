@@ -1,0 +1,27 @@
+<div class="container" ng-app="myApp">
+    <div class="row" ng-controller="PlayerController">
+        <div class="col-md-8">
+            <h1>Audio player</h1>
+            <div player-view class="large-6 columns small-6" ng-model="player"></div>
+        </div>
+
+        <div class="col-md-4">
+            <accordion close-others="true">
+                <accordion-group ng-repeat="playlist in playlists track by $index" ng-model="playlists" ng-show="playlist.name">
+                    <accordion-heading>
+                        {{ playlist.name}} <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
+                    </accordion-heading>
+
+                    <ol>
+                        <li ng-repeat="file in playlist.files track by $index">
+                            <span audio-link ng-model="file"></span>
+                        </li>
+                    </ol>
+
+                    <input class="btn btn-primary" type="button" value="Delete" ng-click="delete(playlist)">
+                    <input class="btn btn-default" type="button" value="Play" ng-click="play(playlist.id)"/>
+                </accordion-group>
+            </accordion>
+        </div>
+    </div>
+</div>
