@@ -248,7 +248,7 @@ class User < ActiveRecord::Base
     if options[:friendship]
       f = {term: {'friendships.friend_id' => options[:friendship]}}
 
-      __set_filters.(:friendships, f)
+      self.set_es_filters(f)
       options.delete(:friendship)
     end
 

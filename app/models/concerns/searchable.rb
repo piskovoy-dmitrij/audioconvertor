@@ -13,13 +13,10 @@ module Searchable
     after_commit lambda { Indexer.perform_async(:update, self.class.to_s, self.id) }, on: :update
     after_commit lambda { Indexer.perform_async(:delete, self.class.to_s, self.id) }, on: :destroy
 
-    __set_filters = lambda do |key, f|
+    def self.set_es_filters(f)
 
       @search_definition[:filter][:and] ||= []
       @search_definition[:filter][:and] |= [f]
-
-      @search_definition[:facets][key.to_sym][:facet_filter][:and] ||= []
-      @search_definition[:facets][key.to_sym][:facet_filter][:and] |= [f]
     end
 
     def self.search(query, options={})
@@ -35,7 +32,6 @@ module Searchable
 
           filter: {}
       }
-
 
       if options[:sortby]
         sort = 'desc'
@@ -59,7 +55,7 @@ module Searchable
 
         f = {term: {key.to_sym => value}}
 
-        __set_filters.(key, f)
+        self.set_es_filters(f)
       end
 
       __elasticsearch__.search(@search_definition)
