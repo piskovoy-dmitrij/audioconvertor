@@ -7,27 +7,6 @@
         = text_field_tag :q, params[:q], class: 'form-control', placeholder: 'Search...'
 
         %span.input-group-btn
-          = submit_tag :search, class:"btn btn-default"
+          = submit_tag :Search, class:"btn btn-default"
 
-    %table.table.table-striped.list-table
-      %thead
-        %tr
-          %th
-            User
-          %th.text-right
-            Action
-      %tbody
-        - @friends.each_with_hit do |user, hit|
-          %tr
-            %td
-              = link_to user_path(user) do
-                = hit.try(:highlight).try(:name) ? hit.highlight.name.join.html_safe : user.name
-            %td.text-right
-              - unless current_user.me?(user)
-                = link_to 'Add to friends', invite_friend_path(user), class: 'btn btn-success'
-      %tfoot
-        %tr
-          %th
-            User
-          %th.text-right
-            Action
+    = render 'users/list'

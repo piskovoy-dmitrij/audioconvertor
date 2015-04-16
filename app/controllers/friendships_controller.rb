@@ -52,6 +52,6 @@ class FriendshipsController < ActionController::Base
   end
 
   def search
-    @friends = User.search(params[:q], {friendship: current_user.id}).page(params[:page]).records
+    @users = User.search(params[:q], {friendship: current_user.id}).page(params[:page]).records
   end
 end
