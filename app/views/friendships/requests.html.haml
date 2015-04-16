@@ -20,7 +20,7 @@
                 = link_to user_path(friend) do
                   = friend.name
               %td.text-right
-                = link_to 'Remove request', remove_friend_path(friend), method: :delete, data: {confirm: 'You sure?'}, class: 'btn btn-danger'
+                = link_to 'Remove request', cancel_friend_path(friend), method: :delete, data: {confirm: 'You sure?'}, class: 'btn btn-danger'
         %tfoot
           %tr
             %th

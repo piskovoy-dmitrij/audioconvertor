@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   resources :friends, :controller => 'friendships', :only => [:show, :index], param: :username, :constraints => { :username => /[^\/]+/ } do
     member do
       get :confirm
+      delete :cancel
       delete :remove
       get :invite
     end

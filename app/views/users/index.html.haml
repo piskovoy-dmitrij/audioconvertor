@@ -3,7 +3,7 @@
     = text_field_tag :q, params[:q], class: 'form-control', placeholder: 'Search...'
 
     %span.input-group-btn
-      = submit_tag :search, class:"btn btn-default"
+      = submit_tag :Search, class:"btn btn-default"
 
 - if @users
   %table.table.table-striped.list-table
@@ -21,13 +21,18 @@
               = hit.try(:highlight).try(:name) ? hit.highlight.name.join.html_safe : user.name
           %td.text-right
             - unless current_user.me?(user)
-              - friend = hit.try(:friendships).find { |f| f.friend_id == current_user.id }.try(:is_confirmed)
-              - if friend.nil?
+              - friend = hit.try(:friendships).find { |f| f.friend_id == current_user.id }
+              - inverse = hit.try(:inverse_friendships).find { |f| f.user_id == current_user.id }.try(:is_confirmed)
+              - if friend.nil? && inverse.nil?
                 = link_to 'Add to friends', invite_friend_path(user), class: 'btn btn-success'
-              - elsif friend
-                = link_to 'Remove from friends', remove_friend_path(user), method: :delete, data: {confirm: 'You sure?'}, class: 'btn btn-danger'
+              - elsif inverse == false
+                = link_to 'Remove request', cancel_friend_path(user), method: :delete, data: {confirm: 'You sure?'}, class: 'btn btn-danger'
               - else
-                = link_to 'Remove request', remove_friend_path(user), method: :delete, data: {confirm: 'You sure?'}, class: 'btn btn-danger'
+                - friend = friend.try(:is_confirmed)
+                -if friend
+                  = link_to 'Remove from friends', remove_friend_path(user), method: :delete, data: {confirm: 'You sure?'}, class: 'btn btn-danger'
+                - else
+                  = link_to 'Confirm friendship', confirm_friend_path(user), class: 'btn btn-success'
     %tfoot
       %tr
         %th

@@ -22,6 +22,32 @@ class User < ActiveRecord::Base
 
   include Searchable
 
+  settings analysis: {
+               filter: {
+                   ngram_filter: {
+                       type: 'nGram',
+                       min_gram: 2,
+                       max_gram: 50
+                   }
+               },
+               analyzer: {
+                   index_ngram_analyzer: {
+                       type: 'custom',
+                       tokenizer: 'standard',
+                       filter: ['lowercase', 'ngram_filter']
+                   },
+                   search_ngram_analyzer: {
+                       type: 'custom',
+                       tokenizer: 'standard',
+                       filter: ['lowercase']
+                   }
+               }
+           } do
+    mapping do
+      indexes :name, type: 'string', index_analyzer: 'index_ngram_analyzer', search_analyzer: 'search_ngram_analyzer'
+    end
+  end
+
   self.friendly_id_config.slug_column = 'username'
   self.friendly_id_config.sequence_separator = '.'
 
@@ -101,11 +127,11 @@ class User < ActiveRecord::Base
   end
 
   def requests
-    followers.where('is_confirmed = false')
+    friends.where('is_confirmed = false')
   end
 
   def invites
-    friends.where('is_confirmed = false')
+    followers.where('is_confirmed = false')
   end
 
   def me?(user)
@@ -113,15 +139,15 @@ class User < ActiveRecord::Base
   end
 
   def invite(user)
-    if me?(user) || friend_with?(user)
-      false
+    if can_become_friend_with?(user)
+      Friendship.new({friend: user, user: self}).save
     else
-      Friendship.new({friend: self, user: user}).save
+      false
     end
   end
 
   def confirm_friendship(user)
-    friendship = get_friendship(user)
+    friendship = get_inverse_friendship(user)
     if friendship.nil?
       false
     else
@@ -130,6 +156,15 @@ class User < ActiveRecord::Base
   end
 
   def remove_friendship(user)
+    friendship = get_confiremd_friendship(user)
+    if friendship.nil?
+      false
+    else
+      friendship.destroy
+    end
+  end
+
+  def cancel_friendship(user)
     friendship = get_friendship(user)
     if friendship.nil?
       false
@@ -158,8 +193,16 @@ class User < ActiveRecord::Base
     friends.include?(user)
   end
 
+  def get_inverse_friendship(user)
+    inverse_friendships.where({is_confirmed: false, user: user}).first
+  end
+
   def get_friendship(user)
-    friendships.where({is_confirmed: false, friend: user}).first_or_initialize
+    friendships.where({is_confirmed: false, friend: user}).first
+  end
+
+  def get_confiremd_friendship(user)
+    friendships.where({is_confirmed: true, friend: user}).first
   end
 
   def request_friendship?(user)
@@ -168,5 +211,49 @@ class User < ActiveRecord::Base
 
   def can_become_friend_with?(user)
     !me?(user) && (!friend_with?(user) || request_friendship?(user))
+  end
+
+  def as_indexed_json(options={})
+    self.as_json(
+        only: [:id, :name],
+        include: {
+            friendships: {only: [:friend_id, :is_confirmed]},
+            inverse_friendships: {only: [:user_id, :is_confirmed]},
+        }
+    )
+  end
+
+  def self.set_needed_filters(query, options)
+
+    @search_definition[:highlight][:fields] = {
+        name: {}
+    }
+
+    unless query.blank?
+      @search_definition[:query] = {
+          bool: {
+              should: [
+                  {
+                      match: {
+                          name: query
+                      }
+                  }
+              ]
+          }
+      }
+    end
+
+    @search_definition[:sort] = {name: 'asc'}
+
+    if options[:friendship]
+      f = {term: {'friendships.friend_id' => options[:friendship]}}
+
+      __set_filters.(:friendships, f)
+      options.delete(:friendship)
+    end
+
+    options.delete(:name)
+
+    options
   end
 end

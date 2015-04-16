@@ -42,6 +42,15 @@ class FriendshipsController < ActionController::Base
     redirect_to friends_path
   end
 
+  def cancel
+    flash[:notice] = 'Sorry, couldn\'t cancel!'
+    friend = User.friendly.find(params[:username])
+    unless friend.nil?
+      flash[:notice] = 'Successfully canceled!' if current_user.cancel_friendship(friend)
+    end
+    redirect_to friends_path
+  end
+
   def search
     @friends = User.search(params[:q], {friendship: current_user.id}).page(params[:page]).records
   end
