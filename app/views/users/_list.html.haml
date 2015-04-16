@@ -1,0 +1,36 @@
+- if @users
+  %table.table.table-striped.list-table
+    %thead
+      %tr
+        %th
+          User
+        %th.text-right
+          Action
+    %tbody
+      - @users.each_with_hit do |user, hit|
+        %tr
+          %td
+            = link_to user_path(user) do
+              = hit.try(:highlight).try(:name) ? hit.highlight.name.join.html_safe : user.name
+          %td.text-right
+            - unless current_user.me?(user)
+              - friend = hit.try(:friendships).try { |enum| enum.find { |f| f.friend_id == current_user.id } }
+              - inverse = hit.try(:inverse_friendships).try { |enum| enum.find { |f| f.user_id == current_user.id } }.try(:is_confirmed)
+              - if friend.nil? && inverse.nil?
+                = link_to 'Add to friends', invite_friend_path(user), class: 'btn btn-success'
+              - elsif inverse === false
+                = link_to 'Remove request', cancel_friend_path(user), method: :delete, data: {confirm: 'You sure?'}, class: 'btn btn-danger'
+              - else
+                - friend = friend.try(:is_confirmed)
+                -if friend
+                  = link_to 'Remove from friends', remove_friend_path(user), method: :delete, data: {confirm: 'You sure?'}, class: 'btn btn-danger'
+                - else
+                  = link_to 'Confirm friendship', confirm_friend_path(user), class: 'btn btn-success'
+    %tfoot
+      %tr
+        %th
+          User
+        %th.text-right
+          Action
+
+  = paginate @users
