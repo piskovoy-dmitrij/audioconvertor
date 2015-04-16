@@ -1,5 +1,5 @@
 # bundle exec sidekiq --queue elasticsearch --verbose
-# rake environment elasticsearch:import:model CLASS='User' BATCH=100 FORCE=y
+# rake environment elasticsearch:import:model CLASS='User' FORCE=y
 #
 module Searchable
   extend ActiveSupport::Concern
